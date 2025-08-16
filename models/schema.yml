@@ -1,0 +1,99 @@
+version: 2
+
+models:
+  - name: dim_user
+    columns:
+      - name: user_sk
+        tests: [not_null, unique]
+      - name: user_id
+        tests: [not_null, unique]
+      - name: gender
+        tests:
+          - accepted_values:
+              values: ['Male','Female','Other']
+      - name: is_premium
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+  - name: dim_driver
+    columns:
+      - name: driver_sk
+        tests: [not_null, unique]
+      - name: driver_id
+        tests: [not_null, unique]
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['active','pending','deactivated']
+      
+      - name: rating_band
+        tests:
+          - accepted_values:
+              values: ['elite','gold','silver','standard','unknown']
+
+  - name: dim_vehicle
+    columns:
+      - name: vehicle_sk
+        tests: [not_null, unique]
+      - name: vehicle_id
+        tests: [not_null, unique]
+      - name: colour
+        tests:
+          - accepted_values:
+              values: ['black','white','silver','blue','red','gray','green']
+              where: "colour is not null"
+
+  - name: dim_location
+    columns:
+      - name: location_sk
+        tests: [not_null, unique]
+      - name: location_id
+        tests: [not_null, unique]
+
+  - name: dim_payment
+    description: "Attribute dim for payments (type/status/currency/channel)"
+    columns:
+      - name: payment_sk
+        tests: [not_null, unique]
+      - name: payment_type
+        tests:
+          - accepted_values:
+              values: ['card','cash','digital','discount','other','wallet','coupon']
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['captured','failed','refunded','unknown']
+
+  - name: fct_trips
+    description: "Fact at trip_id; measures + timestamps + SKs to dims"
+    columns:
+      - name: trip_id
+        tests: [not_null, unique]
+
+      - name: total_fare
+        tests:
+          - not_null:
+              where: "status = 'completed'"
+
+
+      - name: user_id
+        tests:
+          - relationships:
+              to: ref('dim_user')
+              field: user_id
+      - name: driver_id
+        tests:
+          - relationships:
+              to: ref('dim_driver')
+              field: driver_id
+      - name: vehicle_id
+        tests:
+          - relationships:
+              to: ref('dim_vehicle')
+              field: vehicle_id
+      - name: location_id
+        tests:
+          - relationships:
+              to: ref('dim_location')
+              field: location_id

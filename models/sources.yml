@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: raw
+    database: RIDESHARE
+    schema: RAW
+    tables:
+      - name: APP_USER
+
+      - name: DRIVER
+
+      - name: LOCATION
+
+      - name: PAYMENT
+
+      - name: RATING
+
+      - name: TRIP
+
+      - name : VEHICLE 
